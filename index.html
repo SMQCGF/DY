@@ -97,7 +97,6 @@ body{background:#d0d0d0;padding:10px;}
 .btn:hover{background:#e9ecef;}
 .excel-area{text-align:center;margin-bottom:10px;}
 #excelFile{font-size:12px;}
-
 .price-row {display: flex;gap: 6px;flex:1;}
 .price-row input {
   flex: 1;
@@ -114,7 +113,6 @@ body{background:#d0d0d0;padding:10px;}
   padding:0 6px;
   font-size:12px;
 }
-
 .search-popup{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
   background:white; border:2px solid #000;
@@ -124,7 +122,6 @@ body{background:#d0d0d0;padding:10px;}
 .popup-item{padding:8px 10px;border-bottom:1px solid #ccc;cursor:pointer;}
 .popup-item:hover{background:#f0f0f0;}
 .popup-close{background:#ff4444;color:white;padding:5px 10px;text-align:center;cursor:pointer;margin-bottom:5px;}
-
 .footer{
   margin-top:15px;
   font-size:12px;
@@ -150,9 +147,7 @@ body{background:#d0d0d0;padding:10px;}
   font-size:12px;
 }
 .footer a{
-  color:#007bff;
-  text-decoration:none;
-  font-size:12px;
+  color:#007bff;text-decoration:none;font-size:12px;
 }
 .copyright{
   text-align:center;
@@ -161,7 +156,6 @@ body{background:#d0d0d0;padding:10px;}
   line-height:1.5;
   color:#333;
 }
-
 @media print{
   body *{visibility:hidden;}
   .label-box, .label-box *{visibility:visible;}
@@ -226,7 +220,6 @@ body{background:#d0d0d0;padding:10px;}
     <div class="btn" onclick="exportCurrentToExcel()">导出Excel</div>
     <div class="btn" onclick="clearAll()">清空重置</div>
   </div>
-
   <div class="footer">
     <div class="footer-row">
       <div class="footer-left">
@@ -250,7 +243,6 @@ body{background:#d0d0d0;padding:10px;}
     </div>
   </div>
 </div>
-
 <!-- 说明弹窗 -->
 <div class="modal" id="infoModal">
   <div class="modal-box">
@@ -269,8 +261,7 @@ body{background:#d0d0d0;padding:10px;}
     <div class="modal-close" onclick="closeAllModal()">关闭</div>
   </div>
 </div>
-
-<!-- 联系弹窗（链接可点击跳转） -->
+<!-- 联系弹窗（链接可点击跳转，已补全计算器网址） -->
 <div class="modal" id="contactModal">
   <div class="modal-box">
     <div class="modal-title">联系我们</div>
@@ -288,12 +279,10 @@ body{background:#d0d0d0;padding:10px;}
     <div class="modal-close" onclick="closeAllModal()">关闭</div>
   </div>
 </div>
-
 <div class="search-popup" id="searchPopup">
   <div class="popup-close" onclick="closePopup()">关闭</div>
   <div id="popupList"></div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script>
 document.oncontextmenu = function(){return false;}
@@ -303,9 +292,7 @@ document.onkeydown = function(e){
 let excelData = [];
 let headerInfo = { title1: '', title2: '', tel: '' };
 let timer = null;
-
 document.getElementById('labelHeader').innerHTML = '最简单好用的标签打印数据一秒复制<br>右上角有说明或联系沙漠倾城18962500118';
-
 // 价格限制5位
 function limitPriceDigit(){
   let val = document.getElementById('inputPrice').value;
@@ -315,7 +302,6 @@ function limitPriceDigit(){
   if(parts[0].length>5){val=parts[0].slice(0,5)+(parts[1]?'.'+parts[1]:'')}
   document.getElementById('inputPrice').value = val;
 }
-
 function onSearchInput(){
   document.getElementById('inputCode').value = '';
   searchByKeyword();
@@ -335,7 +321,6 @@ function getToday() {
   let d = new Date();
   return d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日";
 }
-
 document.getElementById('excelFile').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -361,10 +346,9 @@ document.getElementById('excelFile').addEventListener('change', function (e) {
     };
     reader.readAsBinaryString(file);
 });
-
 function downloadSampleExcel() {
   const sample = [
-    {"编号：":"","品名：":"","规格：":"","原料：":"","克重：":"","色坯：":"","门幅：":"","价格：":"","备注：":"","抬头1：":"","抬头2或地址：":"","联系：":""}
+    {"编号：":"","品名：":"","规格：":"","原料：":"","克重：":"","色胚：":"","门幅：":"","价格：":"","备注：":"","抬头1：":"","抬头2或地址：":"","联系：":""}
   ];
   const ws = XLSX.utils.json_to_sheet(sample);
   const wb = XLSX.utils.book_new();
@@ -372,12 +356,10 @@ function downloadSampleExcel() {
   XLSX.writeFile(wb, "产品规格.xlsx");
   alert("样板表格下载成功！文件名为：产品规格.xlsx");
 }
-
 function delayUpdateLabel() {
   clearTimeout(timer);
   timer = setTimeout(()=>{ updateLabel(); }, 300);
 }
-
 function updateLabel() {
     const code = document.getElementById('inputCode').value.trim();
     const priceInput = document.getElementById('inputPrice').value.trim();
@@ -389,11 +371,15 @@ function updateLabel() {
     });
     if (!row) { clearAllFields(); return; }
     const baipi = row['克重：'] || '';
-    const sepi = row['色坯：'] || '';
+    const sepi = row['色胚：'] || '';
     let weightText = '-';
-    if (baipi && sepi) weightText = `白坯${baipi}克/色坯${sepi}克`;
-    else if (baipi) weightText = `${baipi}克`;
-    else if (sepi) weightText = `${sepi}克`;
+    if(baipi && sepi){
+        weightText = `白坯${baipi}克/色坯${sepi}克`;
+    }else if(baipi){
+        weightText = `白坯${baipi}克`;
+    }else if(sepi){
+        weightText = `色坯${sepi}克`;
+    }
     let finalPrice = priceInput || row['价格：'] || '';
     let priceText = '-';
     if(finalPrice) priceText = `${taxType}${finalPrice}元（${getToday()}）`;
@@ -407,7 +393,6 @@ function updateLabel() {
     document.getElementById('l-note').innerText = row['备注：'] || '-';
     document.getElementById('l-tel').innerText = headerInfo.tel || '-';
 }
-
 function searchByKeyword() {
   const kw = document.getElementById('searchName').value.trim();
   if (!kw || excelData.length === 0) { closePopup(); clearAllFields(); return; }
@@ -415,7 +400,6 @@ function searchByKeyword() {
   if (list.length === 0) { closePopup(); clearAllFields(); return; }
   showPopup(list);
 }
-
 function showPopup(list) {
   const popup = document.getElementById('searchPopup');
   const container = document.getElementById('popupList');
@@ -431,16 +415,13 @@ function showPopup(list) {
   });
   popup.style.display = 'block';
 }
-
 function closePopup() { document.getElementById('searchPopup').style.display = 'none'; }
-
 function selectItem(code, name) {
   document.getElementById('inputCode').value = code;
   document.getElementById('searchName').value = name;
   closePopup();
   updateLabel();
 }
-
 function clearAllFields() {
     document.getElementById('l-code').innerText = '-';
     document.getElementById('l-name').innerText = '-';
@@ -452,7 +433,6 @@ function clearAllFields() {
     document.getElementById('l-note').innerText = '-';
     document.getElementById('l-tel').innerText = '-';
 }
-
 function clearAll() {
     document.getElementById('inputCode').value = '';
     document.getElementById('inputPrice').value = '';
@@ -466,7 +446,6 @@ function clearAll() {
     closePopup();
     closeAllModal();
 }
-
 function exportCurrentToExcel() {
     const data = [{
         "编号": document.getElementById('l-code').innerText,
